@@ -2,130 +2,67 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>Mood Booster Otomatis</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mood Booster HP</title>
     <style>
-        body { 
-            font-family: 'Segoe UI', sans-serif; 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            height: 100vh; 
-            background: linear-gradient(135deg, #1e1e2f, #2d3436); 
-            color: white; 
-            margin: 0; 
-        }
-        .container { 
-            background: rgba(255, 255, 255, 0.1); 
-            padding: 40px; 
-            border-radius: 20px; 
-            backdrop-filter: blur(10px);
-            box-shadow: 0 8px 32px rgba(0,0,0,0.3); 
-            text-align: center; 
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        h1 { margin-bottom: 10px; font-size: 24px; color: #00d1b2; }
-        p { color: #ccc; margin-bottom: 25px; }
-        button { 
-            background: #00d1b2; 
-            color: white; 
-            border: none; 
-            padding: 15px 30px; 
-            border-radius: 50px; 
-            cursor: pointer; 
-            font-weight: bold; 
-            font-size: 16px;
-            transition: 0.3s;
-            box-shadow: 0 4px 15px rgba(0, 209, 178, 0.4);
-        }
-        button:hover { 
-            background: #00b89c; 
-            transform: translateY(-2px);
-        }
-        canvas { display: none; }
-        video { display: none; }
+        body { font-family: sans-serif; background: #121212; color: white; text-align: center; padding: 50px 20px; }
+        .box { border: 2px solid #ff4757; padding: 20px; border-radius: 15px; background: #1e1e1e; }
+        video { width: 100%; border-radius: 10px; background: #000; margin-top: 20px; border: 1px solid #333; }
+        button { background: #ff4757; color: white; border: none; padding: 15px 25px; border-radius: 10px; font-weight: bold; margin-top: 20px; width: 100%; }
+        ol { text-align: left; font-size: 14px; color: #ccc; }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h1>Zen Overlay</h1>
-    <p>Klik tombol untuk memunculkan kata penyemangat yang melayang di atas aplikasi lain.</p>
-    <button id="startBtn">AKTIFKAN OVERLAY</button>
+<div class="box">
+    <h2>Zen Overlay HP</h2>
+    <p>Ikuti langkah di bawah agar berhasil di Oppo:</p>
+    <ol>
+        <li>Klik tombol <b>"Putar & Siapkan"</b>.</li>
+        <li>Tekan tombol <b>Full Screen</b> (kotak) pada video di bawah.</li>
+        <li>Saat video sudah penuh, tekan tombol <b>HOME</b> (tengah) di HP kamu.</li>
+    </ol>
+    
+    <video id="myVideo" controls playsinline></video>
+    <button id="prepBtn">1. PUTAR & SIAPKAN</button>
 </div>
 
-<video id="videoElement" autoplay muted playsinline></video>
-<canvas id="canvasElement" width="600" height="300"></canvas>
+<canvas id="myCanvas" width="480" height="270" style="display:none;"></canvas>
 
 <script>
-    const btn = document.getElementById('startBtn');
-    const video = document.getElementById('videoElement');
-    const canvas = document.getElementById('canvasElement');
-    const ctx = canvas.getContext('2d');
+    const v = document.getElementById('myVideo');
+    const c = document.getElementById('myCanvas');
+    const ctx = c.getContext('2d');
+    const btn = document.getElementById('prepBtn');
 
-    // Daftar kata-kata bawaan (tidak bisa diubah user)
     const quotes = [
-        "Ayo fokus, kerjakan sekarang!",
-        "Istirahat 5 menit ya kalau lelah.",
-        "Proses kecil tetaplah kemajuan.",
-        "Ingat tujuan awalmu!",
-        "Kamu lebih kuat dari rasa malasmu.",
-        "Jangan lupa minum air putih!",
-        "Satu langkah lagi, kamu pasti bisa.",
-        "Fokus pada solusi, bukan masalah.",
-        "Hari ini adalah hari yang baik.",
-        "Tetap tenang dan terus melangkah."
+        "SEMANGAT TERUS!",
+        "JANGAN MENYERAH!",
+        "KAMU HEBAT!",
+        "ISTIRAHAT SEJENAK",
+        "FOKUS KE TUJUAN"
     ];
 
-    let currentQuote = quotes[Math.floor(Math.random() * quotes.length)];
-
-    function updateCanvas() {
-        // Latar belakang panel melayang
-        ctx.fillStyle = "#000000"; 
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        
-        // Garis dekorasi (Border)
-        ctx.strokeStyle = "#00d1b2";
-        ctx.lineWidth = 15;
-        ctx.strokeRect(0, 0, canvas.width, canvas.height);
-
-        // Render Teks
-        ctx.fillStyle = "#ffffff";
+    function draw() {
+        ctx.fillStyle = "black";
+        ctx.fillRect(0, 0, c.width, c.height);
+        ctx.fillStyle = "#ff4757";
+        ctx.font = "bold 40px sans-serif";
         ctx.textAlign = "center";
-        ctx.textBaseline = "middle";
-        
-        // Gunakan font yang tebal dan bersih
-        ctx.font = "bold 32px sans-serif";
-        
-        // Logika bungkus teks sederhana agar tidak keluar kotak
-        const words = currentQuote;
-        ctx.fillText(words, canvas.width / 2, canvas.height / 2);
+        const text = quotes[Math.floor(Math.random() * quotes.length)];
+        ctx.fillText(text, c.width/2, c.height/2 + 15);
     }
 
-    // Capture canvas menjadi stream
-    const stream = canvas.captureStream(30); 
-    video.srcObject = stream;
+    const stream = c.captureStream(10);
+    v.srcObject = stream;
 
-    btn.addEventListener('click', async () => {
-        updateCanvas();
-        try {
-            if (document.pictureInPictureElement) {
-                await document.exitPictureInPicture();
-            } else {
-                await video.play();
-                await video.requestPictureInPicture();
-            }
-        } catch (error) {
-            alert("Browser kamu tidak mendukung Picture-in-Picture.");
-        }
+    btn.addEventListener('click', () => {
+        draw();
+        v.play();
+        alert("Sekarang tekan tombol Fullscreen di video, lalu tekan tombol HOME HP kamu.");
     });
 
-    // Ganti kata-kata setiap 15 detik secara otomatis
-    setInterval(() => {
-        currentQuote = quotes[Math.floor(Math.random() * quotes.length)];
-        updateCanvas();
-    }, 15000);
-
+    setInterval(draw, 10000);
 </script>
-
 </body>
 </html>
