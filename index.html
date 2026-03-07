@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Mood Booster Otomatis</title>
+    <style>
+        body { 
+            font-family: 'Segoe UI', sans-serif; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            height: 100vh; 
+            background: linear-gradient(135deg, #1e1e2f, #2d3436); 
+            color: white; 
+            margin: 0; 
+        }
+        .container { 
+            background: rgba(255, 255, 255, 0.1); 
+            padding: 40px; 
+            border-radius: 20px; 
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3); 
+            text-align: center; 
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        h1 { margin-bottom: 10px; font-size: 24px; color: #00d1b2; }
+        p { color: #ccc; margin-bottom: 25px; }
+        button { 
+            background: #00d1b2; 
+            color: white; 
+            border: none; 
+            padding: 15px 30px; 
+            border-radius: 50px; 
+            cursor: pointer; 
+            font-weight: bold; 
+            font-size: 16px;
+            transition: 0.3s;
+            box-shadow: 0 4px 15px rgba(0, 209, 178, 0.4);
+        }
+        button:hover { 
+            background: #00b89c; 
+            transform: translateY(-2px);
+        }
+        canvas { display: none; }
+        video { display: none; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Zen Overlay</h1>
+    <p>Klik tombol untuk memunculkan kata penyemangat yang melayang di atas aplikasi lain.</p>
+    <button id="startBtn">AKTIFKAN OVERLAY</button>
+</div>
+
+<video id="videoElement" autoplay muted playsinline></video>
+<canvas id="canvasElement" width="600" height="300"></canvas>
+
+<script>
+    const btn = document.getElementById('startBtn');
+    const video = document.getElementById('videoElement');
+    const canvas = document.getElementById('canvasElement');
+    const ctx = canvas.getContext('2d');
+
+    // Daftar kata-kata bawaan (tidak bisa diubah user)
+    const quotes = [
+        "Ayo fokus, kerjakan sekarang!",
+        "Istirahat 5 menit ya kalau lelah.",
+        "Proses kecil tetaplah kemajuan.",
+        "Ingat tujuan awalmu!",
+        "Kamu lebih kuat dari rasa malasmu.",
+        "Jangan lupa minum air putih!",
+        "Satu langkah lagi, kamu pasti bisa.",
+        "Fokus pada solusi, bukan masalah.",
+        "Hari ini adalah hari yang baik.",
+        "Tetap tenang dan terus melangkah."
+    ];
+
+    let currentQuote = quotes[Math.floor(Math.random() * quotes.length)];
+
+    function updateCanvas() {
+        // Latar belakang panel melayang
+        ctx.fillStyle = "#000000"; 
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        // Garis dekorasi (Border)
+        ctx.strokeStyle = "#00d1b2";
+        ctx.lineWidth = 15;
+        ctx.strokeRect(0, 0, canvas.width, canvas.height);
+
+        // Render Teks
+        ctx.fillStyle = "#ffffff";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        
+        // Gunakan font yang tebal dan bersih
+        ctx.font = "bold 32px sans-serif";
+        
+        // Logika bungkus teks sederhana agar tidak keluar kotak
+        const words = currentQuote;
+        ctx.fillText(words, canvas.width / 2, canvas.height / 2);
+    }
+
+    // Capture canvas menjadi stream
+    const stream = canvas.captureStream(30); 
+    video.srcObject = stream;
+
+    btn.addEventListener('click', async () => {
+        updateCanvas();
+        try {
+            if (document.pictureInPictureElement) {
+                await document.exitPictureInPicture();
+            } else {
+                await video.play();
+                await video.requestPictureInPicture();
+            }
+        } catch (error) {
+            alert("Browser kamu tidak mendukung Picture-in-Picture.");
+        }
+    });
+
+    // Ganti kata-kata setiap 15 detik secara otomatis
+    setInterval(() => {
+        currentQuote = quotes[Math.floor(Math.random() * quotes.length)];
+        updateCanvas();
+    }, 15000);
+
+</script>
+
+</body>
+</html>
